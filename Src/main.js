@@ -1,3 +1,11 @@
+import Sprite from "./entities/Sprite.js"
+import Player from "./entities/Player.js"
+import Enemy from "./entities/Enemy.js"
+import Target from "./entities/Target.js"
+import Bullet from "./entities/Bullet.js"
+import Cage from "./entities/Cage.js"
+import Platform from "./entities/Platform.js"
+
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d')
 
@@ -23,165 +31,6 @@ const uiLose = document.getElementById("loseScreen")
 uiLose.style.width = canvas.width + "px"
 uiLose.style.height = canvas.height + "px"
 uiLose.style.display = "none"
-
-class Sprite {
-    constructor({width, height, position, velocity, color}) {
-        this.width = width
-        this.height = height
-        this.position = position
-        this.velocity = velocity
-        this.color = color
-        this.isOnGround = false
-    }
-
-    draw() {
-        c.fillStyle = this.color
-        c.fillRect (this.position.x, this.position.y, this.width, this.height)
-    }
-
-    update(deltaTime = 1) {
-        this.draw()
-
-        this.position.x += this.velocity.x * deltaTime
-        this.position.y += this.velocity.y * deltaTime
-        this.velocity.y += gravity * deltaTime
-
-        if (this.position.x < 0) {
-            this.position.x = 0
-            this.velocity.x = 0
-        }
-
-        if (this.position.x + this.width > canvas.width) {
-            this.position.x = canvas.width - this.width
-            this.velocity.x = 0
-        }
-    }
-}
-
-class Player extends Sprite {
-    handleInput(keys, deltaTime) {
-        const accel = 600
-        const maxSpeed = 300
-        const deccel = 0.93
-
-        // Player movement
-        if (keys.a.pressed && keys.d.pressed) {
-            this.velocity.x *= deccel
-        } else if (keys.arrowLeft.pressed && keys.arrowRight.pressed) {
-            this.velocity.x *= deccel
-        } else if (keys.arrowLeft.pressed && keys.d.pressed) {
-            this.velocity.x *= deccel
-        } else if (keys.arrowRight.pressed && keys.a.pressed) {
-            this.velocity.x *= deccel
-        } else if (keys.a.pressed || keys.arrowLeft.pressed) {
-            this.velocity.x -= accel * deltaTime
-        } else if (keys.d.pressed || keys.arrowRight.pressed) {
-            this.velocity.x += accel * deltaTime
-        } else {
-            this.velocity.x *= deccel
-        }
-
-        if (this.velocity.x > maxSpeed) this.velocity.x = maxSpeed
-        if (this.velocity.x < -maxSpeed) this.velocity.x = -maxSpeed
-
-        if (keys.arrowRight.pressed || keys.d.pressed) player.facing = 1
-        if (keys.arrowLeft.pressed || keys.a.pressed) player.facing = -1
-    }
-}
-
-class Target extends Sprite {
-    follow(player, deltaTime) {
-        const accel = 900
-        const maxSpeed = 120
-        const deccel = 0.95
-        const range = 200
-        
-        const dx = player.position.x - this.position.x
-        const distanceX = Math.abs(dx)
-
-        if (distanceX > range) {
-            this.velocity.x *= deccel
-        } else {
-            this.velocity.x += dx > 0 ? accel * deltaTime : -accel * deltaTime
-        }
-
-        if (this.velocity.x > maxSpeed) this.velocity.x = maxSpeed
-        if (this.velocity.x < -maxSpeed) this.velocity.x = -maxSpeed
-    }
-}
-
-class Enemy extends Sprite {
-    follow(player, deltaTime) {
-        const accel = 500
-        const maxSpeed = 112
-        const deccel = 0.95
-        const range = 200
-        
-        const dx = player.position.x - this.position.x
-        const distanceX = Math.abs(dx)
-
-        if (distanceX > range) {
-            this.velocity.x *= deccel
-        } else {
-            this.velocity.x += dx > 0 ? accel * deltaTime : -accel * deltaTime
-        }
-
-        if (this.velocity.x > maxSpeed) this.velocity.x = maxSpeed
-        if (this.velocity.x < -maxSpeed) this.velocity.x = -maxSpeed
-    }
-}
-
-class Platform {
-    constructor({x, y, width, height, color = 'green'}) {
-        this.position = {x, y}
-        this.width = width
-        this.height = height
-        this.color = color
-    }
-
-    draw() {
-        c.fillStyle = this.color
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
-}
-
-class Cage {
-    constructor({position, width, height}) {
-        this.position = position
-        this.width = width
-        this.height = height
-    }
-
-    draw() {
-        c.strokeStyle = "yellow"
-        c.lineWidth = 4
-        c.strokeRect(this.position.x, this.position.y, this.width, this.height)
-    }
-}
-
-class Bullet {
-    constructor(x, y, direction) {
-        this.width = 10
-        this.height = 5
-        this.speed = 500
-        this.position = {x, y}
-        this.velocity  =  { x: this.speed * direction, y: 0}
-        this.active = true
-    }
-
-    update(deltaTime) {
-        this.position.x += this.velocity.x * deltaTime
-
-        if (this.position.x < 0 || this.position.x > canvas.width) {
-            this.active = false
-        }
-    }
-
-    draw() {
-        c.fillStyle = "yellow"
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
-}
 
 let player, target, cage, platforms = [], enemies = [], bullets = []
 
@@ -290,10 +139,6 @@ function loadLevel(index) {
         width: p.width,
         height: p.height
     }))
-
-    function findPlatformUnderX(x) {
-        return platforms.find(p => (x >= p.position.x) && (x <= p.position.x + p.width))
-    }
 
     enemies = (data.enemies || []).map(e => {
 
@@ -413,16 +258,15 @@ function animate(time = 0) {
     c.fillRect(0, 0, canvas.width, canvas.height)
 
     player.isOnGround = false
-
     player.handleInput(keys, deltaTime)
-    target.follow(player, deltaTime)
+    player.update(deltaTime, c, gravity, canvas.width)
 
-    player.update(deltaTime)
-    target.update(deltaTime)
+    target.follow(player, deltaTime)
+    target.update(deltaTime, c, gravity, canvas.width)
 
     enemies.forEach(enemy => {
         enemy.follow(player, deltaTime)
-        enemy.update(deltaTime)
+        enemy.update(deltaTime, c, gravity, canvas.width)
     })
 
     // platform
@@ -430,7 +274,7 @@ function animate(time = 0) {
         .slice()
         .sort((a, b) => a.position.y - b.position.y)
         .forEach(p => {
-            p.draw()
+            p.draw(c)
             checkCollision(player, p, deltaTime)
             checkCollision(target, p, deltaTime)
             enemies.forEach(enemy => checkCollision(enemy, p, deltaTime))
@@ -440,7 +284,7 @@ function animate(time = 0) {
     })
 
     // cage
-    cage.draw()
+    cage.draw(c)
 
     checkWinCondition()
     
@@ -453,7 +297,13 @@ function animate(time = 0) {
         }
     })
 
-    bullets.forEach((bullet => bullet.update(deltaTime)))
+    bullets.forEach((b, index) => {
+        b.update(deltaTime, canvas.width)
+        b.draw(c)
+
+        if (!b.active) bullets.splice(index, 1)
+    })
+
     bullets = bullets.filter((bullet => bullet.active))
     bullets.forEach((bullet) => bullet.draw())
 }
