@@ -89,7 +89,7 @@ class Player extends Sprite {
     }
 }
 
-class She extends Sprite {
+class Target extends Sprite {
     follow(player, deltaTime) {
         const accel = 900
         const maxSpeed = 120
@@ -183,7 +183,7 @@ class Bullet {
     }
 }
 
-let player, she, cage, platforms = [], enemies = [], bullets = []
+let player, target, cage, platforms = [], enemies = [], bullets = []
 
 const charWidth = 20
 const charHeight = 50
@@ -197,7 +197,7 @@ const levels = [
             x: 50,
             y: canvas.height - charHeight - groundHeight
         },
-        she: {
+        target: {
             x: 760,
             y: canvas.height - charHeight - groundHeight
         },
@@ -218,7 +218,7 @@ const levels = [
             x: 50,
             y: canvas.height - charHeight - groundHeight
         },
-        she: {
+        target: {
             x: 860,
             y: canvas.height - charHeight - groundHeight
         },
@@ -261,12 +261,12 @@ function loadLevel(index) {
         color: "blue"
     })
 
-    she = new She({
+    target = new Target({
         width: charWidth,
         height: charHeight,
         position: {
-            x: data.she.x,
-            y: data.she.y
+            x: data.target.x,
+            y: data.target.y
         },
         velocity: {
             x: 0,
@@ -415,10 +415,10 @@ function animate(time = 0) {
     player.isOnGround = false
 
     player.handleInput(keys, deltaTime)
-    she.follow(player, deltaTime)
+    target.follow(player, deltaTime)
 
     player.update(deltaTime)
-    she.update(deltaTime)
+    target.update(deltaTime)
 
     enemies.forEach(enemy => {
         enemy.follow(player, deltaTime)
@@ -432,7 +432,7 @@ function animate(time = 0) {
         .forEach(p => {
             p.draw()
             checkCollision(player, p, deltaTime)
-            checkCollision(she, p, deltaTime)
+            checkCollision(target, p, deltaTime)
             enemies.forEach(enemy => checkCollision(enemy, p, deltaTime))
             if (checkCollision(player, p)) {
                 player.isOnGround = true
@@ -444,7 +444,7 @@ function animate(time = 0) {
 
     checkWinCondition()
     
-    const lostObject = [...enemies, she]
+    const lostObject = [...enemies, target]
 
     lostObject.forEach (obj => {
         if (isColliding(player, obj))
@@ -525,14 +525,14 @@ window.addEventListener("keydown", (e) => {
 function checkWinCondition() {
     const gapCage = 15
 
-    const sheInsideCage = (
-        she.position.x >= cage.position.x + gapCage &&
-        she.position.x + she.width <= cage.position.x + cage.width - gapCage &&
-        she.position.y >= cage.position.y &&
-        she.position.y + she.height <= cage.position.y + cage.height
+    const targetInsideCage = (
+        target.position.x >= cage.position.x + gapCage &&
+        target.position.x + target.width <= cage.position.x + cage.width - gapCage &&
+        target.position.y >= cage.position.y &&
+        target.position.y + target.height <= cage.position.y + cage.height
     )
 
-    if ( sheInsideCage && !isWin) {
+    if ( targetInsideCage && !isWin) {
         isWin = true
         uiWin.style.display = "flex"
         Object.values(keys).forEach(k => k.pressed = false)
