@@ -4,9 +4,12 @@ export default class Enemy extends Sprite {
     constructor(args) {
         super(args)
         this.facing = 1
+        this.isDead = false
     }
 
     follow(player, deltaTime) {
+        if (this.isDead) return
+
         const accel = 500
         const maxSpeed = 112
         const deccel = 0.95
@@ -28,6 +31,13 @@ export default class Enemy extends Sprite {
     }
 
     update(deltaTime, ctx, gravity, canvasWidth) {
+        
+        if (this.isDead) {
+            this.draw(ctx)
+            return
+        }
+
+
         super.update(deltaTime, ctx, gravity, canvasWidth)
     }
 }

@@ -4,6 +4,7 @@ export default class Player extends Sprite {
     constructor(args) {
         super(args)
         this.facing = 1
+        this.isOnGround = true
     }
 
     handleInput(keys, deltaTime) {
@@ -33,6 +34,13 @@ export default class Player extends Sprite {
 
         if (keys.arrowRight.pressed || keys.d.pressed) this.facing = 1
         if (keys.arrowLeft.pressed || keys.a.pressed) this.facing = -1
+    }
+
+    handleJump() {
+        if (this.isOnGround) {
+            this.velocity.y = -600 // jumpForce
+            this.isOnGround = false
+        }
     }
 
     update(deltaTime, ctx, gravity, canvasWidth) {
