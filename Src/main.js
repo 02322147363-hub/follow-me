@@ -1,15 +1,11 @@
-import Player from "./entities/Player.js"
-import Enemy from "./entities/Enemy.js"
-import Target from "./entities/Target.js"
 import Bullet from "./entities/Bullet.js"
-import Cage from "./entities/Cage.js"
-import Platform from "./entities/Platform.js"
 import { keys, resetInput } from "./systems/inputKeys.js"
 import "./systems/input.js"
 import { inputLocked, unlockInput, lockInput, setWin } from "./systems/gameState.js"
 import { checkCollision } from "./systems/collision.js"
 import { levels } from "./levels/levelData.js"
 import { loadLevel } from "./levels/loadLevel.js"
+import { createUIManager } from "./systems/ui.js"
 
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d')
@@ -20,21 +16,6 @@ canvas.height = 576
 const gravity = 1200
 
 c.fillRect(0, 0, canvas.width, canvas.height)
-
-const uiWin = document.getElementById("winScreen")
-uiWin.style.width = canvas.width + "px"
-uiWin.style.height = canvas.height + "px"
-uiWin.style.display = "none"
-
-const uiEnd = document.getElementById("endScreen")
-uiEnd.style.display = "none"
-uiEnd.style.width = canvas.width + "px"
-uiEnd.style.height = canvas.height + "px"
-
-const uiLose = document.getElementById("loseScreen")
-uiLose.style.width = canvas.width + "px"
-uiLose.style.height = canvas.height + "px"
-uiLose.style.display = "none"
 
 let currentLevel = 0
 let isWin = false
@@ -49,6 +30,7 @@ let animationId
 lastTime = performance.now()
 
 function animate(time = 0) {
+
     let deltaTime = (time - lastTime) / 1000
     if (deltaTime > 0.1) deltaTime = 0.1
     lastTime = time
@@ -125,15 +107,26 @@ function animate(time = 0) {
 
 animate()
 
-window.addEventListener('keydown', (event) => {
-    if (inputLocked()) return
-    if (event.key === 'w' || event.key === 'ArrowUp') {
-        player.handleJump()
-    }
+const ui = createUIManager({
+    loadLevel,
+    animate,
+    levels,
+    canvas
 })
 
 let lastShotTime = 0
 const fireCooldown = 0.25 
+
+
+
+window.addEventListener("levelSelected", (e) => {
+    const { player: p, target: t, cage: c, platforms: pf, enemies: en } = e.detail
+    player = p
+    target = t
+    cage = c
+    platforms = pf
+    enemies = en
+})
 
 window.addEventListener("keydown", (e) => {
 
@@ -152,6 +145,16 @@ window.addEventListener("keydown", (e) => {
 
         bullets.push(new Bullet(bulletX, bulletY, direction))
     }
+
+    if (e.key === 'w' || e.key === 'ArrowUp') {
+        player.handleJump()
+    }
+
+    if (e.key === 'Escape') {
+        ({ player, target, cage, platforms, enemies } =
+        loadLevel(currentLevel, levels, canvas))
+        ui.goToMainMenu();
+    }
 })
 
 
@@ -166,11 +169,17 @@ function checkWinCondition() {
         target.position.y + target.height <= cage.position.y + cage.height
     )
 
-    if ( targetInsideCage && !isWin) {
+    if (targetInsideCage && !isWin) {
         setWin(true)
-        uiWin.style.display = "flex"
-        lockInput()
-        resetInput()
+
+        const lastIndex = levels.length - 1
+
+        if (currentLevel === lastIndex) {
+            ui.showEnd()
+        } else {
+            ui.showWin()
+        }
+
         cancelAnimationFrame(animationId)
     }
 }
@@ -185,7 +194,6 @@ document.getElementById("nextLevelButton").addEventListener("click", () => {
             loadLevel(currentLevel, levels, canvas))
 
         isWin = false
-        uiWin.style.display = "none"
         animate()
     } else {
         console.log('game selesai')
@@ -205,17 +213,13 @@ function isColliding(a, b) {
 }
 
 function gameOver() {
+    ui.showLose()
     cancelAnimationFrame(animationId)
-    uiLose.style.display = "flex"
-    cancelAnimationFrame(animationId)
-    lockInput()
-    resetInput()
 }
 
 document.getElementById("retryButton").addEventListener("click", () => {
     ({ player, target, cage, platforms, enemies } =
         loadLevel(currentLevel, levels, canvas))
-    uiLose.style.display = "none"
     animate()
 })
 // ----------- Lose Condition End --------------

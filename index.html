@@ -9,17 +9,40 @@
 </head>
 
 <body>
-    <div id="winScreen" class="winScreen">
+    <!-- MAIN MENU -->
+    <div id="mainMenu" class="uiScreen">
+        <button id="playBtn">Play</button>
+        <button id="creditBtn">Credit</button>
+    </div>
+
+    <!-- LEVEL SELECT -->
+    <div id="levelSelect" class="uiScreen" style="display:none;">
+        <h2>Select Level</h2>
+        <button class="levelButton" data-level="0">Level 1</button>
+        <button class="levelButton" data-level="1">Level 2</button>
+        <button id="backToMainFromLevel">Back</button>
+    </div>
+
+    <!-- CREDIT -->
+    <div id="creditMenu" class="uiScreen" style="display:none;">
+        <p>Made by Zid</p>
+        <button id="backToMainFromCredit">Back</button>
+    </div>
+    
+    <!-- Win -->
+    <div id="winScreen" class="uiScreen" style="display:none;">
         <p>You Win!!!</p>
         <button id="nextLevelButton">Next Level</button>
     </div>
 
-    <div id="endScreen" class="endScreen">
+    <!-- Win End -->
+    <div id="endScreen" class="uiScreen" style="display:none;">
         <p>You Win!!!</p>
-        <button id="mainMenuLevelButton">Main Menu</button>
+        <button id="endToMainBtn">Main Menu</button>
     </div>
 
-    <div id="loseScreen" class="loseScreen">
+    <!-- Lose -->
+    <div id="loseScreen" class="uiScreen" style="display:none;">
         <p>You Lose</p>
         <button id="retryButton">Try Again</button>
     </div>

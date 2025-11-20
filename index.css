@@ -4,63 +4,27 @@ html, body {
     overflow: hidden;
 }
 
-.winScreen {
-    display: none;
+.uiScreen {
     position: absolute;
-    top: 0;
-    left: 0;
-    background-color: dodgerblue;
-    color: white;
-    font-size: 48px;
+    width: 100%;
+    height: 100%;
+    color: aliceblue;
+    font-size: 41px;
+    background: rgba(0,0,0,0.7);
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-}
-
-.winScreen button {
-    font-size: 24px;
-    padding: 10px 20px;
-    margin-top: 20px;
-    cursor: pointer;
-}
-
-.endScreen {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: dodgerblue;
-    color: white;
-    font-size: 48px;
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 20px;
 }
 
-.endScreen button {
-    font-size: 24px;
-    padding: 10px 20px;
-    margin-top: 20px;
-    cursor: pointer;
+canvas {
+    display: block;
+    margin: 0;
+    padding: 0;
 }
 
-.loseScreen {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: tomato;
-    color: white;
-    font-size: 48px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.loseScreen button {
+.uiScreen button {
     font-size: 24px;
     padding: 10px 20px;
     margin-top: 20px;
