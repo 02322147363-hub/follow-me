@@ -20,7 +20,7 @@ export default class Bullet {
     }
 
     draw(ctx) {
-        ctx.fillStyle = "#F3A712"
+        ctx.fillStyle = "#004FFF"
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
     }
 }

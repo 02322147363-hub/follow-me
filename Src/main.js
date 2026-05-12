@@ -58,7 +58,7 @@ function animate(time = 0) {
 
     animationId = window.requestAnimationFrame(animate)
 
-    c.fillStyle = '#29335C'
+    c.fillStyle = '#31AFD4'
     c.fillRect(0, 0, canvas.width, canvas.height)
 
     player.isOnGround = false
