@@ -11,14 +11,14 @@ import { modeRun } from "./systems/gameState.js"
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d')
 
-canvas.width = 1024
-canvas.height = 576
+canvas.width = 1080
+canvas.height = 720
 
-const gravity = 1200
+const gravity = 1400
 
 c.fillRect(0, 0, canvas.width, canvas.height)
 
-let currentLevel = 1
+let currentLevel = 0
 let isWin = false
 
 let { player, target, cage, platforms, enemies } =
