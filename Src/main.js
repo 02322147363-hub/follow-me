@@ -18,7 +18,7 @@ const gravity = 1600
 
 c.fillRect(0, 0, canvas.width, canvas.height)
 
-let currentLevel = 0
+let currentLevel = 1
 let isWin = false
 
 let { player, target, cage, platforms, enemies } =
